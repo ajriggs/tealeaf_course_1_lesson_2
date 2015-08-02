@@ -90,12 +90,12 @@ class GameText
     say("Do you want to play again? [Y/N]")
   end
 
-  def self.announce_final_standings(player, game)
+  def self.announce_final_standings(player)
     system 'clear'
     title("Final Standings!")
-    say("#{player.name}'s wins: #{game.player_win_count} \n"\
-    "   Computer's wins: #{game.computer_win_count} \n"\
-    "   Ties: #{game.times_played - (game.player_win_count + game.computer_win_count)}")
+    say("#{player.name}'s wins: #{Game.player_win_count} \n"\
+    "   Computer's wins: #{Game.computer_win_count} \n"\
+    "   Ties: #{Game.tie_count}")
   end
 end
 
@@ -103,7 +103,7 @@ end
 class Game
 
   CHOICES = ['ROCK', 'PAPER', 'SCISSORS']
-  @@times_played = 0
+  @@tie_count = 0
   @@player_win_count = 0
   @@computer_win_count = 0
 
@@ -114,6 +114,9 @@ class Game
     elsif player < computer
       @@computer_win_count += 1
       "The computer"
+    else
+      @@tie_count += 1
+      nil
     end
   end
 
@@ -131,11 +134,6 @@ class Game
     GameText.announce_choices(player, computer)
     winner = Game.winner(player, computer)
     GameText.announce_winner(winner)
-    @@times_played += 1
-  end
-
-  def self.times_played
-    @@times_played
   end
 
   def self.player_win_count
@@ -144,6 +142,10 @@ class Game
 
   def self.computer_win_count
     @@computer_win_count
+  end
+
+  def self.tie_count
+    @@tie_count
   end
 
   def self.play_again?(input)
@@ -169,4 +171,4 @@ loop do
   GameText.request_another_game
   break unless Game.play_again?(gets.chomp)
 end
-GameText.announce_final_standings(player, Game)
+GameText.announce_final_standings(player)
