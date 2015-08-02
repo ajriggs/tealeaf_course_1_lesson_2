@@ -41,7 +41,7 @@ class Player
 
 end
 
-# GameText contains all UI put to the screen, and (almost) no logic.
+# GameText contains all UI elements, and (almost) no logic.
 class GameText
 
   def self.title(title)
