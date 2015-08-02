@@ -148,15 +148,15 @@ class Game
     @@tie_count
   end
 
-  def self.play_again?(input)
+  def self.play_again?(response)
     loop do
-      break if input.downcase == 'y' || input.downcase == 'n'
+      break if response.downcase == 'y' || response.downcase == 'n'
       GameText.invalid_input_message
       GameText.request_another_game
-      input = gets.chomp
+      response = gets.chomp
     end
     false
-    if input.downcase == 'y'
+    if response.downcase == 'y'
       true
     end
   end
