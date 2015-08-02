@@ -49,15 +49,15 @@ class GameText
     puts  "=> #{msg}".ljust(62)
   end
 
-  def self.announce_new_game
-    system 'clear'
-    title("Let's Play Rock-Paper-Scissors!")
-  end
-
   def self.request_player_name
     system 'clear'
     title("What's your name?")
     say("Please enter a name or alias:")
+  end
+
+  def self.invalid_input_message
+    system 'clear'
+    title('Oops! Invalid input, try again.')
   end
 
   def self.greet_player(player)
@@ -65,13 +65,13 @@ class GameText
     sleep 1
   end
 
-  def self.request_player_choice
-    say("Which do you choose? [ROCK, PAPER, or SCISSORS]")
+  def self.announce_new_game
+    system 'clear'
+    title("Let's Play Rock-Paper-Scissors!")
   end
 
-  def self.invalid_input_message
-    system 'clear'
-    title('Oops! Invalid input, try again.')
+  def self.request_player_choice
+    say("Which do you choose? [ROCK, PAPER, or SCISSORS]")
   end
 
   def self.announce_choices(player, computer)
