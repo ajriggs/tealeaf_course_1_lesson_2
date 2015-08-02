@@ -124,7 +124,7 @@ class Game
     end
   end
 
-  def self.prepare_to_play(player)
+  def self.prepare(player)
     GameText.request_player_name
     player.name=(gets.chomp)
     GameText.greet_player(player)
@@ -169,7 +169,7 @@ end
 
 player = Player.new
 computer = Player.new
-Game.prepare_to_play(player)
+Game.prepare(player)
 loop do
   Game.play(player, computer)
   GameText.request_another_game
