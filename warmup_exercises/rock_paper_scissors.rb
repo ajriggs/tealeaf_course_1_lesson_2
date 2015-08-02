@@ -1,5 +1,5 @@
-# Contains states for player names and choices, as well as an
-# interface for the rest of the code the interact w/ these states.
+# Contains states for player names and choices, as well as an interface for
+# the rest of the code to interact w/ these states.
 class Player
 
   include Comparable
