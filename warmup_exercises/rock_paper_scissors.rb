@@ -1,3 +1,5 @@
+# Contains states for player names and choices, as well as an
+# interface for the rest of the code the interact w/ these states.
 class Player
 
   include Comparable
@@ -16,7 +18,8 @@ class Player
 
   def choice=(choice)
     loop do
-      break if choice.upcase == 'ROCK' || choice.upcase == 'PAPER' || choice.upcase == 'SCISSORS'
+      break if (choice.upcase == 'ROCK') || (choice.upcase == 'PAPER') ||
+      (choice.upcase == 'SCISSORS')
       GameText.invalid_input_message
       GameText.request_player_choice
       choice = gets.chomp
@@ -38,7 +41,7 @@ class Player
 
 end
 
-# GameText contains only
+# GameText contains all UI put to the screen, and (almost) no logic.
 class GameText
 
   def self.title(title)
@@ -99,7 +102,8 @@ class GameText
   end
 end
 
-
+# Game-level logic implementation. Executes the game, allows user to play games
+# in succession, and tracks match statistics.
 class Game
 
   CHOICES = ['ROCK', 'PAPER', 'SCISSORS']
