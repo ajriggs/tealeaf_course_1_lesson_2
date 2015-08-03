@@ -1,27 +1,29 @@
-# Contains states for player names and choices, as well as an interface for
-# the rest of the code to interact w/ these states.
 class Player
-
   include Comparable
 
   attr_reader :name, :choice
 
-  def name=(name)
-    loop do
-      break unless name == '' || name =~ /^\s+$/
-      GameText.invalid_input_message
-      GameText.request_player_name
+  def initialize(player_type)
+    if player_type == 'human'
       name = gets.chomp
+      loop do
+        break unless name == '' || name =~ /^\s+$/
+        Request.new.valid_input_please
+        Request.new.player_name
+        name = gets.chomp
+      end
+      @name = name.capitalize
+    elsif player_type == 'computer'
+      @name = 'The computer'
     end
-    @name = name.capitalize
   end
 
   def choice=(choice)
     loop do
       break if (choice.upcase == 'ROCK') || (choice.upcase == 'PAPER') ||
       (choice.upcase == 'SCISSORS')
-      GameText.invalid_input_message
-      GameText.request_player_choice
+      Request.new.valid_input_please
+      Request.new.player_choice
       choice = gets.chomp
     end
     @choice = choice.upcase
@@ -38,141 +40,131 @@ class Player
       -1
     end
   end
-
 end
 
-# GameText contains all UI elements, and (almost) no logic.
-class GameText
-
-  def self.title(title)
+module CoreUi
+  def title(title)
     puts title.center(62, '~')
   end
 
-  def self.say(msg)
+  def say(msg)
     puts  "=> #{msg}".ljust(62)
   end
+end
 
-  def self.request_player_name
-    system 'clear'
-    title("What's your name?")
-    say("Please enter a name or alias:")
+class GameText
+  include CoreUi
+
+  attr_reader :player, :computer
+
+  def initialize(player, computer)
+    @player = player
+    @computer = computer
   end
 
-  def self.invalid_input_message
-    system 'clear'
-    title('Oops! Invalid input, try again.')
-  end
-
-  def self.greet_player(player)
+  def greet_player
     say("Hi #{player.name}! Let's play!")
     sleep 1
   end
 
-  def self.announce_new_game
+  def announce_new_game
     system 'clear'
     title("Let's Play Rock-Paper-Scissors!")
   end
 
-  def self.request_player_choice
-    say("Which do you choose? [ROCK, PAPER, or SCISSORS]")
-  end
-
-  def self.announce_choices(player, computer)
+  def announce_choices
     system 'clear'
     title("Results")
     say("#{player.name} chose #{player.choice}.")
     say("The computer chose #{computer.choice}.")
   end
 
-  def self.announce_winner(winner)
+  def announce_winner(winner)
     say("#{winner} wins!") if winner
     say("It's a tie!") if !winner
   end
 
-  def self.request_another_game
-    say("Do you want to play again? [Y/N]")
+  def bye
+    say('Bye, and thanks for playing!')
   end
 
-  def self.announce_final_standings(player)
+end
+
+class Request
+  include CoreUi
+
+  def player_name
     system 'clear'
-    title("Final Standings!")
-    say("#{player.name}'s wins: #{Game.player_win_count} \n"\
-    "   Computer's wins: #{Game.computer_win_count} \n"\
-    "   Ties: #{Game.tie_count}")
+    title("What's your name?")
+    say("Please enter a name or alias:")
+  end
+
+  def player_choice
+    say("Which do you choose? [ROCK, PAPER, or SCISSORS]")
+  end
+
+  def valid_input_please
+    system 'clear'
+    title('Oops! Invalid input, please try again.')
+  end
+
+  def another_game
+    say("Do you want to play again? [Y/N]")
   end
 end
 
-# Game-level logic implementation. Executes the game, allows user to play games
-# in succession, and tracks match statistics.
 class Game
+  attr_accessor :player, :computer, :request, :game_text
 
   CHOICES = ['ROCK', 'PAPER', 'SCISSORS']
-  @@tie_count = 0
-  @@player_win_count = 0
-  @@computer_win_count = 0
 
-  def self.winner(player, computer)
+  def initialize
+    Request.new.player_name
+    self.player = Player.new('human')
+    self.computer = Player.new('computer')
+    self.game_text = GameText.new(player, computer)
+    game_text.greet_player
+  end
+
+  def winner
     if player > computer
-      @@player_win_count += 1
       "#{player.name}"
     elsif player < computer
-      @@computer_win_count += 1
       "The computer"
     else
-      @@tie_count += 1
       nil
     end
   end
 
-  def self.prepare(player)
-    GameText.request_player_name
-    player.name=(gets.chomp)
-    GameText.greet_player(player)
+  def play
+    game_text.announce_new_game
+    Request.new.player_choice
+    player.choice = gets.chomp
+    computer.choice = CHOICES.sample
+    game_text.announce_choices
+    game_text.announce_winner(winner)
   end
 
-  def self.play(player, computer)
-    GameText.announce_new_game
-    GameText.request_player_choice
-    player.choice=(gets.chomp)
-    computer.choice=(CHOICES.sample)
-    GameText.announce_choices(player, computer)
-    winner = Game.winner(player, computer)
-    GameText.announce_winner(winner)
-  end
-
-  def self.player_win_count
-    @@player_win_count
-  end
-
-  def self.computer_win_count
-    @@computer_win_count
-  end
-
-  def self.tie_count
-    @@tie_count
-  end
-
-  def self.play_again?(response)
+  def play_again?(response)
     loop do
       break if response.downcase == 'y' || response.downcase == 'n'
-      GameText.invalid_input_message
-      GameText.request_another_game
+      Request.new.valid_input_please
+      Request.new.another_game
       response = gets.chomp
     end
-    false
-    if response.downcase == 'y'
-      true
-    end
+    response.downcase == 'y'
+  end
+
+  def quit
+    game_text.bye
   end
 
 end
 
-player = Player.new
-computer = Player.new
-Game.prepare(player)
+game = Game.new
 loop do
-  Game.play(player, computer)
-  GameText.request_another_game
-  break unless Game.play_again?(gets.chomp)
+  game.play
+  Request.new.another_game
+  break unless game.play_again?(gets.chomp)
 end
-GameText.announce_final_standings(player)
+game.quit
