@@ -1,7 +1,7 @@
 module ComputerAi
   def square_to_win(line, computer_marker)
     if (line.values.count(computer_marker) == 2)
-      line.select{|_position, value| value == ' '}.keys.first
+      line.select{|_, value| value == ' '}.keys.first
     else
       false
     end
@@ -9,7 +9,7 @@ module ComputerAi
 
   def square_to_block(line, human_marker)
     if (line.values.count(human_marker) == 2)
-      line.select{|_position, value| value == ' '}.keys.first
+      line.select{|_, value| value == ' '}.keys.first
     else
       false
     end
@@ -33,9 +33,8 @@ class Board
   end
 
   def line_contents
-    line_contents = []
-    WINNING_LINES.each do |line|
-      line_contents << {line[0] => self.contents[line[0]],
+    line_contents = WINNING_LINES.each_with_object([]) do |line, array|
+      array << {line[0] => self.contents[line[0]],
       line[1] => self.contents[line[1]], line[2] => self.contents[line[2]]}
     end
     line_contents
