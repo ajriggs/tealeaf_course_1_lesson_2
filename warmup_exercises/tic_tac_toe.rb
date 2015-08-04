@@ -23,7 +23,9 @@ class Board
   [7, 8, 9], [1, 5, 9], [3, 5, 7]]
 
   def initialize
-    self.contents = (1..9).each_with_object({}) { |position, hash| hash[position] = ' ' }
+    self.contents = (1..9).each_with_object({}) do |position, hash|
+      hash[position] = ' '
+    end
   end
 
   def empty_squares
@@ -33,7 +35,8 @@ class Board
   def line_contents
     line_contents = []
     WINNING_LINES.each do |line|
-      line_contents << {line[0] => self.contents[line[0]], line[1] => self.contents[line[1]], line[2] => self.contents[line[2]]}
+      line_contents << {line[0] => self.contents[line[0]],
+      line[1] => self.contents[line[1]], line[2] => self.contents[line[2]]}
     end
     line_contents
   end
