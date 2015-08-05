@@ -236,7 +236,7 @@ class Game
 
   def run
     loop do
-    discard_hands
+      discard_hands
       if deck.remaining_cards < deck.size / 2
          deck.replenish(discard_pile)
          deck.riffle
