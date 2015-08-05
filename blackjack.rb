@@ -139,7 +139,7 @@ class Deck
   def riffle
     cut = contents.slice!((25 + (rand 2))..51)
     cut.each_with_index do |card, index|
-      contents.insert((index - 1) + (rand 1), card)
+      contents.insert((index - 1) + (rand 2), card)
     end
   end
 
