@@ -1,5 +1,3 @@
-require 'pry'
-
 module CoreUi
   def say(msg, title = false)
     if title
@@ -59,7 +57,7 @@ class Player
     end
   end
 
-  def hand_string(final_hands = false)
+  def hand_text(final_hands = false)
     string = ''
     hand.each_with_index do |card, index|
       if index == 0
@@ -196,10 +194,10 @@ class Game
 
   def announce_hands(final_results = false)
     say("The dealer dealt you the following hand:", "Current Hands")
-    puts human.hand_string(final_results)
+    puts human.hand_text(final_results)
     puts human.total_string
     say "The dealer dealt itself:"
-    puts dealer.hand_string(final_results)
+    puts dealer.hand_text(final_results)
     puts dealer.total_string if final_results
   end
 
@@ -238,7 +236,6 @@ class Game
 
   def run
     loop do
-      discard_hands
       if deck.remaining_cards < deck.size / 2
          deck.replenish(discard_pile)
          deck.riffle
@@ -253,6 +250,7 @@ class Game
       human_turn
       dealer_turn
       announce_result
+      discard_hands
       break unless play_again?
     end
     say("Bye, #{human.name}! Thanks for playing.")
