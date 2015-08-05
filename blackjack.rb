@@ -236,6 +236,7 @@ class Game
 
   def run
     loop do
+    discard_hands
       if deck.remaining_cards < deck.size / 2
          deck.replenish(discard_pile)
          deck.riffle
@@ -250,7 +251,6 @@ class Game
       human_turn
       dealer_turn
       announce_result
-      discard_hands
       break unless play_again?
     end
     say("Bye, #{human.name}! Thanks for playing.")
