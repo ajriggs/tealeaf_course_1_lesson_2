@@ -48,12 +48,8 @@ class Player
     hand_total > 21
   end
 
-  def blackjack_or_bust
-    blackjack? ? 'blackjack' : (bust? ? 'bust' : false)
-  end
-
   def <=>(other)
-    if (self.hand_total > other.hand_total && !self.bust?) ||
+    if (!self.bust? && self.hand_total > other.hand_total) ||
       (!self.bust? && other.bust?)
       1
     elsif self.hand_total == other.hand_total || self.bust? && other.bust?
@@ -177,6 +173,14 @@ class Game
     sleep 1
   end
 
+  def discard_hands
+    [self.dealer, self.human].each do |player|
+      self.discard_pile += player.hand
+      player.hand.clear
+    end
+    discard_pile.flatten!
+  end
+
   def hit(player)
     dealt_card = deck.contents.shift
     player.hand << dealt_card
@@ -203,7 +207,7 @@ class Game
     until human.stay?
       hit(human)
       announce_hands
-      break if human.blackjack_or_bust
+      break if human.blackjack? || human.bust?
     end
   end
 
@@ -230,14 +234,6 @@ class Game
       response = gets.chomp.upcase
     end
     response == 'Y'
-  end
-
-  def discard_hands
-    [self.dealer, self.human].each do |player|
-      self.discard_pile += player.hand
-      player.hand.clear
-    end
-    discard_pile.flatten!
   end
 
   def run
